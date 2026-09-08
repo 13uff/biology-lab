@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>온도에 따른 세포 호흡 속도 가상실험</title>
+<style>
+:root{
+  --bg:#f4f7f5; --panel:#fff; --line:#d7e0da; --text:#22312a;
+  --muted:#66756d; --accent:#2f6f52; --soft:#ecf4ef; --soft2:#f7f1e8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;line-height:1.58}
+button,input,select,textarea{font:inherit}
+.app{max-width:1180px;margin:0 auto;padding:18px}
+header{padding:10px 4px 12px}
+h1{margin:0;font-size:clamp(25px,4vw,35px);letter-spacing:-.04em}
+header p{margin:8px 0 0;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 18px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font-weight:800;color:var(--muted);cursor:pointer}
+.tab.active{background:var(--accent);border-color:var(--accent);color:white}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:.92fr 1.28fr;gap:16px}
+.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.field{margin:14px 0}
+label{display:block;font-weight:800;margin-bottom:6px}
+input[type=range],select,textarea{width:100%}
+select,textarea{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:white}
+textarea{min-height:82px;resize:vertical}
+.rangeRow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.value{font-weight:900}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+button.btn{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:white}
+.status,.small{font-size:13px;color:var(--muted)}
+.status{margin-top:10px}
+.vars,.box{background:var(--soft);padding:12px 14px;border-radius:12px;font-size:14px}
+.metricWrap{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.metric{font-size:32px;font-weight:900;letter-spacing:-.04em}
+.chartWrap{overflow-x:auto}
+svg{width:100%;min-width:620px;height:auto}
+.tableWrap{overflow:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:760px;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:center}
+th:first-child,td:first-child{text-align:left}
+th{background:#f8fbf9}
+.two,.cards,.activity{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two{margin-top:16px}
+.call{background:var(--soft2);padding:12px 14px;border-radius:12px;font-size:14px;margin-top:10px}
+.badge{display:inline-block;background:var(--soft);padding:4px 10px;border-radius:999px;font-size:12px;color:var(--muted);font-weight:700}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}
+.pill{background:var(--soft);padding:7px 10px;border-radius:999px;font-weight:800}
+.arrow{color:var(--muted)}
+.eq{font-family:ui-monospace,Consolas,monospace;background:#f7f8f6;border-radius:10px;padding:10px;overflow:auto}
+.callout{border-left:4px solid var(--accent);background:var(--soft);padding:10px 12px;border-radius:0 10px 10px 0}
+details{border:1px solid var(--line);border-radius:12px;background:white;padding:12px 14px}
+details+details{margin-top:10px}
+summary{font-weight:800;cursor:pointer}
+@media(max-width:900px){.grid,.two,.cards,.activity{grid-template-columns:1fr}.app{padding:12px}}
+@media print{.tabs,.actions{display:none!important}.page{display:block!important}.panel,.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <span class="badge">생명과학 실험 11 · 70~72쪽</span>
+    <h1>온도에 따른 세포 호흡 속도</h1>
+    <p>발아 콩의 세포 호흡을 CO₂ 센서로 측정하고, 온도가 호흡 속도에 미치는 영향을 탐구합니다.</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-page="lab">가상실험</button>
+    <button class="tab" data-page="theory">이론 정리</button>
+    <button class="tab" data-page="record">탐구 기록</button>
+  </nav>
+
+  <section id="lab" class="page active">
+    <section class="grid">
+      <section class="panel">
+        <h2>1. 실험 설계</h2>
+        <div class="field">
+          <label for="temp">조작 변인: 온도</label>
+          <div class="rangeRow">
+            <input id="temp" type="range" min="5" max="45" step="1" value="25">
+            <output id="tempOut" class="value">25 ℃</output>
+          </div>
+        </div>
+        <div class="field">
+          <label for="beans">발아 콩 개수</label>
+          <select id="beans"><option value="5" selected>5개</option><option value="10">10개</option><option value="15">15개</option></select>
+        </div>
+        <div class="field">
+          <label for="hypothesis">가설</label>
+          <textarea id="hypothesis" placeholder="예) 온도가 상승할수록 일정 범위까지는 세포 호흡 속도가 증가할 것이다."></textarea>
+        </div>
+        <div id="vars" class="vars"></div>
+        <div class="actions">
+          <button id="run" class="btn primary">현재 조건 실험</button>
+          <button id="compare" class="btn">온도별 자동 비교</button>
+          <button id="reset" class="btn">초기화</button>
+        </div>
+        <div id="status" class="status">교과서처럼 5초 간격으로 180초 동안 CO₂ 농도를 측정합니다.</div>
+      </section>
+
+      <section class="panel">
+        <div class="metricWrap">
+          <div><h2>2. CO₂ 농도 변화</h2><div class="small">측정 간격 5초 / 실험 시간 180초</div></div>
+          <div style="text-align:right"><div class="small">계산된 호흡 속도</div><div id="rateNow" class="metric">0.0</div><div class="small">ppm/분</div></div>
+        </div>
+        <div class="chartWrap"><svg id="timeChart" viewBox="0 0 760 390"></svg></div>
+        <div id="analysis" class="call"></div>
+      </section>
+    </section>
+
+    <section class="panel" style="margin-top:16px">
+      <h2>3. 결과 및 고찰</h2>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>실험</th><th>온도</th><th>발아 콩</th><th>최솟값</th><th>최댓값</th><th>변화량</th><th>호흡 속도</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="actions"><button id="csv" class="btn">CSV 저장</button><button class="btn" onclick="window.print()">인쇄 / PDF 저장</button></div>
+    </section>
+  </section>
+
+  <section id="theory" class="page">
+    <section class="cards">
+      <article class="card">
+        <h3>1. 세포호흡이란?</h3>
+        <p>세포는 음식물에 저장된 화학 에너지를 그대로 사용하지 못합니다. 유기물을 분해하면서 방출되는 에너지의 일부를 <b>ATP</b>에 저장하고, 이 ATP를 생명활동에 이용합니다.</p>
+        <div class="callout"><b>세포호흡:</b> 유기물의 화학 에너지 → ATP의 화학 에너지</div>
+      </article>
+
+      <article class="card">
+        <h3>2. 세포호흡의 전체 과정</h3>
+        <div class="flow"><span class="pill">포도당</span><span class="arrow">→</span><span class="pill">해당 과정</span><span class="arrow">→</span><span class="pill">피루브산</span><span class="arrow">→</span><span class="pill">피루브산의 산화</span><span class="arrow">→</span><span class="pill">TCA 회로</span><span class="arrow">→</span><span class="pill">산화적 인산화</span></div>
+        <p>해당 과정은 세포질에서, 이후 단계들은 주로 마이토콘드리아에서 진행됩니다. NADH와 FADH₂가 고에너지 전자를 전자전달계에 전달하고, 화학삼투를 통해 많은 ATP가 합성됩니다.</p>
+      </article>
+
+      <article class="card">
+        <h3>3. 왜 발아 콩을 사용할까?</h3>
+        <p>씨앗이 발아할 때는 세포 분열과 생장, 물질 합성이 활발하게 일어나므로 많은 ATP가 필요합니다. 따라서 발아 중인 콩은 세포호흡이 왕성하여 CO₂ 농도 변화를 비교적 쉽게 측정할 수 있습니다.</p>
+      </article>
+
+      <article class="card">
+        <h3>4. 왜 CO₂로 호흡 속도를 측정할까?</h3>
+        <p>산소호흡에서는 유기물이 분해되는 과정에서 <b>CO₂가 생성</b>되고 O₂가 소비됩니다. 따라서 밀폐된 용기에서 일정 시간 동안 CO₂ 농도가 얼마나 증가했는지를 측정하면 세포호흡의 정도를 비교할 수 있습니다.</p>
+        <div class="eq">호흡 속도 = (CO₂ 농도 최댓값 - 최솟값) ÷ 시간(분)</div>
+      </article>
+
+      <article class="card">
+        <h3>5. 온도가 올라가면 왜 호흡 속도가 증가할까?</h3>
+        <p>세포호흡은 한 번의 반응이 아니라 여러 효소가 연속적으로 관여하는 물질대사입니다. 온도가 올라가면 일정 범위에서는 분자 운동과 효소-기질의 유효 충돌이 증가하여 반응 속도가 커질 수 있습니다.</p>
+        <div class="flow"><span class="pill">온도 ↑</span><span class="arrow">→</span><span class="pill">효소 반응 속도 ↑</span><span class="arrow">→</span><span class="pill">세포호흡 속도 ↑</span></div>
+      </article>
+
+      <article class="card">
+        <h3>6. 온도가 높을수록 계속 빨라질까?</h3>
+        <p>아닙니다. 각 효소에는 활성이 잘 나타나는 온도 범위가 있습니다. 지나치게 높은 온도에서는 단백질 구조와 세포 기능이 영향을 받아 전체 세포호흡 속도가 감소할 수 있습니다.</p>
+        <div class="callout">따라서 온도-세포호흡 속도 관계는 보통 <b>최적 온도</b>를 갖는 곡선으로 예상합니다.</div>
+      </article>
+
+      <article class="card">
+        <h3>7. 산소는 어디에서 사용될까?</h3>
+        <p>산소는 해당 과정에서 직접 사용되는 것이 아니라, 마이토콘드리아 내막의 전자전달계에서 <b>최종 전자수용체</b>로 작용합니다. 전자와 H⁺를 받아 물이 생성됩니다.</p>
+      </article>
+
+      <article class="card">
+        <h3>8. 실험 해석에서 주의할 점</h3>
+        <p>실제 실험에서는 콩의 개수와 질량, 발아 정도, 수분, 용기 부피, 초기 CO₂ 농도, 밀폐 상태 등이 결과에 영향을 줍니다. 따라서 온도만 조작하고 나머지 조건을 가능한 한 일정하게 해야 합니다.</p>
+      </article>
+    </section>
+  </section>
+
+  <section id="record" class="page">
+    <section class="panel">
+      <h2>탐구 기록지</h2>
+      <section class="activity">
+        <div class="field"><label>탐구 문제</label><textarea>온도는 발아 콩의 세포 호흡 속도에 어떤 영향을 미칠까?</textarea></div>
+        <div class="field"><label>가설</label><textarea id="hyp2"></textarea></div>
+        <div class="field"><label>변인 설정</label><textarea id="varRec" placeholder="조작 변인:\n종속 변인:\n통제 변인:"></textarea></div>
+        <div class="field"><label>결과 해석</label><textarea placeholder="온도별 CO₂ 농도 변화와 호흡 속도를 비교하세요."></textarea></div>
+        <div class="field"><label>오차 원인</label><textarea placeholder="콩의 발아 정도, 밀폐 상태, 초기 CO₂ 농도 등"></textarea></div>
+        <div class="field"><label>결론</label><textarea placeholder="가설이 지지되었는지와 근거를 정리하세요."></textarea></div>
+      </section>
+      <div class="actions"><button id="syncRec" class="btn">현재 실험 내용 가져오기</button><button class="btn" onclick="window.print()">탐구 기록 인쇄</button></div>
+    </section>
+    <section class="panel" style="margin-top:16px">
+      <h3>생각해 볼 질문</h3>
+      <details><summary>Q1. CO₂ 농도 증가량이 크다는 것은 무엇을 뜻할까?</summary><p>같은 시간과 같은 양의 생물 재료를 사용했다면, CO₂ 생성이 더 많았다는 뜻이므로 세포호흡이 더 활발했다고 해석할 수 있습니다.</p></details>
+      <details><summary>Q2. 호흡 속도를 O₂ 변화로도 측정할 수 있을까?</summary><p>가능합니다. 산소호흡에서는 O₂가 소비되므로 일정 시간 동안의 O₂ 감소량을 이용해 호흡 속도를 비교할 수 있습니다.</p></details>
+      <details><summary>Q3. 왜 온도 외의 조건을 통제해야 할까?</summary><p>CO₂ 농도 변화가 온도 때문인지 다른 요인 때문인지 구분하기 위해서입니다.</p></details>
+    </section>
+  </section>
+</main>
+
+<script>
+(() => {
+const $=id=>document.getElementById(id);
+let results=[];
+const temp=$('temp'),beans=$('beans'),tbody=$('tbody'),status=$('status'),rateNow=$('rateNow'),timeChart=$('timeChart'),analysis=$('analysis');
+function updateUI(){
+ $('tempOut').textContent=`${temp.value} ℃`;
+ $('vars').innerHTML=`<div><b>조작 변인</b>: 온도</div><div><b>종속 변인</b>: CO₂ 농도 변화, 호흡 속도</div><div><b>통제 변인</b>: 측정 시간 180초, 측정 간격 5초, 밀폐 용기, 발아 콩의 상태</div>`;
+}
+function beanFactor(){return +beans.value/5}
+function respRate(T){const rise=1/(1+Math.exp(-(T-12)/4.5));const drop=1/(1+Math.exp((T-38)/2.8));return 26*rise*drop*beanFactor()}
+function simulate(T){
+ const base=400,rate=respRate(T),perSec=rate/60,times=[],vals=[];
+ for(let t=0;t<=180;t+=5){times.push(t);vals.push(base+perSec*t+1.4*Math.sin(t/18)*Math.sin(t/7))}
+ const min=Math.min(...vals),max=Math.max(...vals),diff=max-min;return{times,vals,min,max,diff,rate:diff/3}
+}
+function drawTime(data){
+ const W=760,H=390,m={l:74,r:22,t:24,b:55},sx=x=>m.l+x/180*(W-m.l-m.r);
+ let ymin=Math.min(...data.vals)-5,ymax=Math.max(...data.vals)+5;if(ymax-ymin<20){ymax+=10;ymin-=10}
+ const sy=y=>m.t+(ymax-y)/(ymax-ymin)*(H-m.t-m.b);let h=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="#fff" stroke="#d7e0da"/>`;
+ h+=`<text x="${(m.l+W-m.r)/2}" y="${H-12}" text-anchor="middle" font-size="13">시간 (초)</text><text x="20" y="${H/2}" text-anchor="middle" transform="rotate(-90 20 ${H/2})" font-size="13">CO₂ 농도 (ppm)</text>`;
+ for(let i=0;i<=6;i++){const x=i*30,xx=sx(x);h+=`<line x1="${xx}" y1="${m.t}" x2="${xx}" y2="${H-m.b}" stroke="#eef2ef"/><text x="${xx}" y="${H-m.b+20}" text-anchor="middle" font-size="12" fill="#66756d">${x}</text>`}
+ for(let i=0;i<=4;i++){const y=ymin+(ymax-ymin)*i/4,yy=sy(y);h+=`<line x1="${m.l}" y1="${yy}" x2="${W-m.r}" y2="${yy}" stroke="#eef2ef"/><text x="${m.l-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="#66756d">${y.toFixed(0)}</text>`}
+ const d=data.vals.map((v,i)=>`${i?'L':'M'} ${sx(data.times[i]).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ');
+ h+=`<path d="${d}" fill="none" stroke="#2f6f52" stroke-width="3"/>`;data.vals.forEach((v,i)=>h+=`<circle cx="${sx(data.times[i])}" cy="${sy(v)}" r="3.8" fill="#2f6f52"/>`);timeChart.innerHTML=h;
+}
+function renderTable(){tbody.innerHTML=results.map((r,i)=>`<tr><td>${i+1}. ${r.mode}</td><td>${r.temp} ℃</td><td>${r.beans}개</td><td>${r.min.toFixed(1)} ppm</td><td>${r.max.toFixed(1)} ppm</td><td>${r.diff.toFixed(1)} ppm</td><td>${r.rate.toFixed(2)} ppm/분</td></tr>`).join('')}
+function runCurrent(){const T=+temp.value,data=simulate(T);results.push({mode:'현재 조건',temp:T,beans:+beans.value,...data});drawTime(data);rateNow.textContent=data.rate.toFixed(1);analysis.innerHTML=`온도 <b>${T} ℃</b>에서 CO₂ 농도는 약 <b>${data.diff.toFixed(1)} ppm</b> 증가했습니다. 호흡 속도는 <b>${data.rate.toFixed(2)} ppm/분</b>입니다.`;renderTable();status.textContent='실험을 완료했습니다.'}
+function compareTemps(){results=[];[5,15,25,35,45].forEach(T=>{const d=simulate(T);results.push({mode:'온도 비교',temp:T,beans:+beans.value,...d})});drawTime(results[2]);rateNow.textContent=results[2].rate.toFixed(1);analysis.innerHTML='대표 조건의 시간별 그래프와 아래 결과표를 함께 비교해 보세요.';renderTable();status.textContent='온도별 자동 비교를 완료했습니다.'}
+function csv(){if(!results.length){alert('저장할 결과가 없습니다.');return}const rows=[['실험','온도(℃)','발아콩수','최솟값','최댓값','변화량','호흡속도']];results.forEach(r=>rows.push([r.mode,r.temp,r.beans,r.min.toFixed(1),r.max.toFixed(1),r.diff.toFixed(1),r.rate.toFixed(2)]));const blob=new Blob(['\ufeff'+rows.map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='온도에_따른_세포호흡_결과.csv';a.click()}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.page).classList.add('active')}));
+$('run').onclick=runCurrent;$('compare').onclick=compareTemps;$('reset').onclick=()=>{results=[];renderTable();timeChart.innerHTML='';rateNow.textContent='0.0';analysis.innerHTML='실험을 실행하면 결과 해석이 표시됩니다.'};$('csv').onclick=csv;
+temp.oninput=updateUI;beans.onchange=updateUI;$('syncRec').onclick=()=>{$('hyp2').value=$('hypothesis').value;$('varRec').value='조작 변인: 온도\\n종속 변인: CO₂ 농도 변화, 호흡 속도\\n통제 변인: 측정 시간, 발아 콩의 상태와 개수, 용기 부피, 밀폐 상태'};
+updateUI();analysis.innerHTML='실험을 실행하면 결과 해석이 표시됩니다.';
+})();
+</script>
+</body>
+</html>
